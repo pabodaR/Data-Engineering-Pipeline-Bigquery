@@ -88,6 +88,7 @@ Trade-offs:
 - Higher cost per row
 
 Batch loading was chosen to optimize cost, simplicity, and reliability.
+
 ---
 ## Observability
 
