@@ -5,7 +5,7 @@ End-to-end Python data pipeline that orchestrates dataset generation, normalizes
 ## Setup 
 ### 1. Open Cloud Shell
 - Go to the GCP Console: https://console.cloud.google.com/
-- Click the Cloud Shell icon
+- Click the **Cloud Shell** icon
 - Wait for the shell to initialize.
 
 ### 2. Clone GitHub Repository
@@ -16,9 +16,9 @@ End-to-end Python data pipeline that orchestrates dataset generation, normalizes
 ### 3. Install Dependencies
 - pip3 install --user pandas google-cloud-bigquery
   
-- pandas is for CSV manipulation.
+- **pandas**: CSV manipulation.
 
-- google-cloud-bigquery is for interacting with BigQuery.
+- **google-cloud-bigquery**:interacting with BigQuery.
 
 ### 4. Set Your Active GCP Project
 - gcloud config set project <YOUR_PROJECT_ID>
@@ -31,8 +31,7 @@ End-to-end Python data pipeline that orchestrates dataset generation, normalizes
 - Replace <YOUR_DATASET_NAME> with your actual dataset name.
 
 ### 6. Update Pipeline Configuration
-- nano pipe.py
-- Open pipe.py in the cloud shell editor
+- nano pipe.py : Open pipe.py in the cloud shell editor
 
 - PROJECT_ID = "<YOUR_PROJECT_ID>"
 - DATASET = "<YOUR_DATASET_NAME>"
@@ -55,16 +54,16 @@ End-to-end Python data pipeline that orchestrates dataset generation, normalizes
 
 - Applies BigQuery SQL schemas (DDL)
 
-- Loads data using idempotent upserts (no duplicates)
+- Loads data using idempotent batch loads (no duplicates)
 
-- Emits a summary report per run
+- Emits structured JSON logs and summary metrics
 
 ---
 ## Data Quality & Validation
 
 Before loading, the pipeline validates:
 
-- Schema and required fields
+- Expected schema and column counts
 
 - Currency normalization to USD
 
@@ -80,9 +79,15 @@ Before loading, the pipeline validates:
 
 Trade-offs:
 
-- Batch loading is efficient and cost-effective for bulk datasets
+**Batch loading**
+- efficient loading
+- cost-effective for bulk datasets
 
-- Streaming inserts provide near-real-time ingestion but are slower per row and incur higher costs
+**Streaming inserts**
+- Near real-time ingestion
+- Higher cost per row
+
+Batch loading was chosen to optimize cost, simplicity, and reliability.
 ---
 ## Observability
 
@@ -90,11 +95,17 @@ Trade-offs:
 
 - Clear error messages on validation or load failures
 
-- Summary metrics emitted after execution
+- Summary metrics emitted after execution: CSV rows, loaded rows, rejected rows, USD min / max values
 ---
 ## Idempotency
 
+- Tables are loaded using WRITE_TRUNCATE
 - Safe to run multiple times
-
 - ensure updates instead of duplicate inserts
+---
+## Notes & Assumptions
 
+- Primary keys and relationships are not enforced due to synthetic/random data generation
+
+- Intermediate CSV files are treated as temporary artifacts and are not committed to version control
+  
